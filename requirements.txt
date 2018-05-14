@@ -1,0 +1,3 @@
+tensorflow==1.0.0
+opencv-contrib-python==3.2.0.8
+mtcnn==1.0.0
