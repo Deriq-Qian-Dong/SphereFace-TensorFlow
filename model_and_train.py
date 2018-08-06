@@ -265,42 +265,7 @@ class SphereFace():
         w1=self.weight_variable(filter_shape)
         b1=self.weight_variable(bias_shape)
         return tf.nn.conv2d(input,w1,strides=[1,strides,strides,1],padding=padding)+b1
-    def addAngleLinear(self,input,in_features=512,m = 4, phiflag=True):
-        self.in_features = in_features
-        self.out_features = self.class_num
-        self.phiflag = phiflag
-        self.m = m
-        self.mlambda = [
-            lambda x: x**0,
-            lambda x: x**1,
-            lambda x: 2*x**2-1,
-            lambda x: 4*x**3-3*x,
-            lambda x: 8*x**4-8*x**2+1,
-            lambda x: 16*x**5-20*x**3+5*x
-        ]
-        w=tf.Variable(tf.ones([self.in_features,self.out_features]))
-        x=input
-
-        xlen=tf.sqrt(tf.reduce_sum(tf.square(x),1))# size=b
-        wlen=tf.sqrt(tf.reduce_sum(tf.square(w),0))# size=Classnum
-        xlen=tf.reshape(xlen,[-1,1])
-        wlen=tf.reshape(wlen,[-1,1])
-        cos_theta=tf.matmul(x,w)
-        # self.test=w
-        cos_theta=cos_theta/xlen
-        cos_theta=tf.reshape(cos_theta,[self.class_num,self.batch])
-        cos_theta=cos_theta/wlen
-        cos_theta=tf.reshape(cos_theta,shape=[self.batch,self.class_num])
-        cos_theta=tf.clip_by_value(cos_theta,-1,1)
-
-        theta = tf.acos(cos_theta)
-        phi_theta = myphi(theta, self.m)
-        phi_theta = tf.clip_by_value(phi_theta,-1 * self.m, 1)
-
-        cos_theta = cos_theta * xlen
-        phi_theta = phi_theta * xlen
-        output = (cos_theta,phi_theta)
-        return output # size=(b,Classnum,2)
+    
 from matplotlib.patches import Rectangle
 if __name__=='__main__':
     bz=64
